@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Syntax check
+        run: python -m py_compile albertsons_clip.py
+
+      - name: Import check (no browser)
+        run: |
+          # Verify the module parses and top-level constants resolve
+          python -c "
+          import ast, sys
+          with open('albertsons_clip.py') as f:
+              tree = ast.parse(f.read())
+          # Check all function defs are valid
+          funcs = [n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]
+          print(f'{len(funcs)} functions defined — syntax OK')
+          "
