@@ -527,7 +527,7 @@ async def main():
                     return 2
                 log("Session restored, proceeding to clip.")
 
-        # ── Step 4: Clip coupons (with second pass for stragglers) ──
+        # ── Step 4: Clip coupons ──
         await page.evaluate("window.scrollTo(0, 0)")
         await asyncio.sleep(1)
 
@@ -543,18 +543,7 @@ async def main():
         await asyncio.sleep(1)
 
         final, new_clips = await clip_all_coupons(page)
-        total_clips = new_clips
-
-        # Second pass: catch stragglers the first pass missed
-        if final["needsClipping"] > 0:
-            log(f"Second pass: {final['needsClipping']} stragglers remain...")
-            await page.evaluate("window.scrollTo(0, 0)")
-            await asyncio.sleep(1)
-            final2, new_clips2 = await clip_all_coupons(page)
-            total_clips += new_clips2
-            log(f"Done! {total_clips} coupons clipped this run ({new_clips} + {new_clips2}).")
-        else:
-            log(f"Done! {total_clips} coupons clipped this run.")
+        log(f"Done! {new_clips} coupons clipped this run.")
 
         await page.close()
         await browser.close()
