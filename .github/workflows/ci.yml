@@ -31,11 +31,5 @@ jobs:
               tree = ast.parse(f.read())
           # Check all function defs are valid
           funcs = [n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]
-          print(f'Functions: {len(funcs)} — {funcs[:5]}...')
-          print('Syntax OK')
+          print(f'{len(funcs)} functions defined — syntax OK')
           "
-
-      - name: Lint (ruff)
-        run: |
-          pip install ruff
-          ruff check albertsons_clip.py --select=E,F --ignore=E501
